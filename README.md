@@ -1,3 +1,3 @@
 # antv-g6-demo
 
-[codesanbox](https://codesandbox.io/s/antv-g6-demo-gf7qn)
+[页面地址](https://zrj1031.github.io/antv-g6-demo/#/)
