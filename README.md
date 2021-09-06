@@ -21,3 +21,12 @@ dom事件无法监听node:click等事件 原生事件暴露一个nodeId 通过gr
 domShape不能相应默认的展开收起行为，增加一个rectShape, rectShape盖在domShape上面, fill transparent
 https://github.com/antvis/G6/issues/3153
 纯改上又有问题，我们的domShape hover效果就没了，因为keyShape元素后绘制优先级更高
+
+id需要全局不一致才行，盲猜内部做了拍平处理，方便findById
+G6.Util.traverseTree(treeData, (subTree) => {
+  // 全量深度遍历 构造出祖先id-父id-id的唯一id(在整棵树下唯一)
+  subTree.children = subTree.childNodeList;
+  subTree.id = subTree.nodeID;
+});
+
+切换render渲染方式的时候G6会报错
