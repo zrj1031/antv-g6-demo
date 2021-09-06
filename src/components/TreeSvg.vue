@@ -4,13 +4,20 @@
     ref="abilityMapMountNode"
   >
     <div id="abilityMapMountNode" />
+    <ToolBar
+      :zoomRadio="zoomRadio"
+      :isFullScreen="fullScreen"
+      @full-screen="handleFullScreen"
+      @zoom-minus="handleZoom(-0.05)"
+      @zoom-plus="handleZoom(0.05)"
+    />
   </div>
 </template>
 
 <script>
 import mockData from "./mockData";
 import G6 from "@antv/g6";
-// import ToolBar from "./ToolBar.vue";
+import ToolBar from "./ToolBar.vue";
 const COLLAPSE_ICON = (x, y, r) => [
   ["M", x, y],
   ["a", r, r, 0, 1, 0, r * 2, 0],
@@ -159,7 +166,7 @@ G6.registerNode(
 export default {
   name: "AbilityMapG6Svg",
   components: {
-    // ToolBar,
+    ToolBar,
   },
   props: {
     searchParams: {
@@ -264,10 +271,8 @@ export default {
 
 <style lang="less" scoped>
 .abilityMap-wrapper {
-  height: 400px;
-  width: 100vw;
+  flex: 1;
   position: relative;
-
   &.fullScreen {
     position: fixed;
     top: 0;
@@ -276,18 +281,15 @@ export default {
     height: 100vh;
     z-index: 99;
   }
+  #abilityMapMountNode {
+    height: 100%;
+    width: 100%;
+    background: #f7f7fa;
+    overflow: hidden;
+  }
 }
 
 #abilityMapMountNode {
-  height: 100%;
-  background: #f7f7fa;
-  z-index: 99;
-  overflow: hidden;
-
-  ::v-deep * {
-    overflow: visible;
-  }
-
   ::v-deep text {
     opacity: 0;
   }

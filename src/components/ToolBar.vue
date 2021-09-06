@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar-wrapper">
-    <div class="ull-screen-wrappe">
+    <div class="full-screen-wrapper">
       <component
         :is="isFullScreen ? 'OffScreenTwo' : 'FullScreenTwo'"
         @click="$emit('full-screen')"

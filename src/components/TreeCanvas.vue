@@ -343,9 +343,6 @@ export default {
 .abilityMap-wrapper {
   flex: 1;
   position: relative;
-  height: 400px;
-  padding: 16px;
-
   &.fullScreen {
     position: fixed;
     top: 0;
@@ -354,12 +351,12 @@ export default {
     height: 100vh;
     z-index: 99;
   }
-}
-
-#abilityMapMountNode {
-  height: 100%;
-  background: #f7f7fa;
-  overflow: hidden;
+  #abilityMapMountNode {
+    height: 100%;
+    width: 100%;
+    background: #f7f7fa;
+    overflow: hidden;
+  }
 }
 </style>
 
