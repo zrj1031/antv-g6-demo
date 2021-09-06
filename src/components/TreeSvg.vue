@@ -1,9 +1,9 @@
 <template>
   <div
-    :class="['abilityMap-wrapper', { fullScreen }]"
-    ref="abilityMapMountNode"
+    :class="['svg-wrapper', { fullScreen }]"
+    ref="svgMountNode"
+    id="svgMountNode"
   >
-    <div id="abilityMapMountNode" />
     <ToolBar
       :zoomRadio="zoomRadio"
       :isFullScreen="fullScreen"
@@ -35,134 +35,6 @@ const EXPAND_ICON = (x, y, r) => [
   ["L", x + r, y + r - 2],
 ];
 
-const treeNodeAttrStyle = {
-  0: {
-    rectBgColor: "#1251FF",
-    textColor: "#fff",
-  },
-  1: {
-    rectBgColor: "#fff",
-    textColor: "#1251FF",
-    circleBgColor: "#6B93FF",
-  },
-  2: {
-    circleBgColor: "#C6C6CC",
-  },
-  3: {
-    circleBgColor: "#C6C6CC",
-  },
-  default: {
-    rectBgColor: "#fff",
-    textColor: "#646475",
-  },
-};
-
-const MAX_TEXT_WIDTH = 152;
-
-// 注册tag-label-node 节点
-G6.registerNode(
-  "tag-canvas-label-node",
-  {
-    draw(cfg, group) {
-      const { depth, children } = cfg;
-      const treeNodeStyle = Object.assign(
-        {},
-        treeNodeAttrStyle.default,
-        treeNodeAttrStyle[depth] || {}
-      );
-      const textShape = group.addShape("text", {
-        attrs: {
-          textAlign: "center",
-          textBaseline: "middle",
-          text: cfg.nodeName,
-          fontSize: 14,
-          fontFamily: "PingFang SC",
-          fontWeight: 500,
-          ...treeNodeStyle.text,
-        },
-        name: "text-shape",
-      });
-      const textWidth = textShape.getBBox().width;
-      const showCount = [1, 2, 3].includes(depth);
-      const showCollapse = depth !== 0 && children?.length > 0;
-
-      const domShape = group.addShape("dom", {
-        attrs: {
-          width:
-            // text
-            Math.min(textWidth, MAX_TEXT_WIDTH) +
-            // padding
-            36 +
-            // collapse
-            (showCollapse ? 26 : 0) +
-            // count
-            (showCount ? 34 : 0),
-          height: 36,
-          html: `
-            <div class="node-wrapper">
-              <div
-                style="background-color: ${treeNodeStyle.rectBgColor};"
-                class="rect-wrapper"
-              >
-                <div
-                  tooltip=${cfg.nodeName}
-                  style="
-                    color: ${treeNodeStyle.textColor};
-                    max-width: ${MAX_TEXT_WIDTH}px
-                  "
-                  class="text ${
-                    textWidth > MAX_TEXT_WIDTH ? "showTooltip" : ""
-                  }"
-                >
-                  ${cfg.nodeName}
-                </div>
-                ${
-                  showCount
-                    ? `
-                  <div
-                      style="background-color: ${treeNodeStyle.circleBgColor};"
-                      class="count"
-                    >
-                    ${cfg.childCount}
-                    </div>
-                  `
-                    : ""
-                }
-              </div>
-              ${showCollapse ? `<div class="collapse-line"></div>` : ""}
-            </div>
-          `,
-        },
-        name: "dom-shape",
-      });
-      if (showCollapse) {
-        group.addShape("marker", {
-          attrs: {
-            x: domShape.getBBox().width - 18,
-            y: domShape.getBBox().height / 2,
-            stroke: "#C6C6CC",
-            fill: "#fff",
-            lineWidth: 2,
-            r: 8,
-            symbol: COLLAPSE_ICON,
-            cursor: "pointer",
-          },
-          name: "marker-shape",
-          className: "marker-collapse-icon",
-        });
-      }
-      return domShape;
-    },
-    getAnchorPoints() {
-      return [
-        [0, 0.5],
-        [1, 0.5],
-      ];
-    },
-  },
-  "single-node"
-);
-
 export default {
   name: "AbilityMapG6Svg",
   components: {
@@ -190,19 +62,146 @@ export default {
         subTree.children = subTree.childNodeList;
         subTree.id = subTree.nodeID;
       });
-      console.log(treeData);
       return treeData;
     },
   },
   methods: {
+    registerNode() {
+      const treeNodeAttrStyle = {
+        0: {
+          rectBgColor: "#1251FF",
+          textColor: "#fff",
+        },
+        1: {
+          rectBgColor: "#fff",
+          textColor: "#1251FF",
+          circleBgColor: "#6B93FF",
+        },
+        2: {
+          circleBgColor: "#C6C6CC",
+        },
+        3: {
+          circleBgColor: "#C6C6CC",
+        },
+        default: {
+          rectBgColor: "#fff",
+          textColor: "#646475",
+        },
+      };
+
+      const MAX_TEXT_WIDTH = 152;
+      // 注册tag-label-node 节点
+      G6.registerNode(
+        "svg-node",
+        {
+          draw(cfg, group) {
+            const { depth, children } = cfg;
+            const treeNodeStyle = Object.assign(
+              {},
+              treeNodeAttrStyle.default,
+              treeNodeAttrStyle[depth] || {}
+            );
+            const textShape = group.addShape("text", {
+              attrs: {
+                textAlign: "center",
+                textBaseline: "middle",
+                text: cfg.nodeName,
+                fontSize: 14,
+                fontFamily: "PingFang SC",
+                fontWeight: 500,
+                ...treeNodeStyle.text,
+              },
+              name: "text-shape",
+            });
+            const textWidth = textShape.getBBox().width;
+            const showCount = [1, 2, 3].includes(depth);
+            const showCollapse = depth !== 0 && children?.length > 0;
+
+            const domShape = group.addShape("dom", {
+              attrs: {
+                width:
+                  // text
+                  Math.min(textWidth, MAX_TEXT_WIDTH) +
+                  // padding
+                  36 +
+                  // collapse
+                  (showCollapse ? 26 : 0) +
+                  // count
+                  (showCount ? 34 : 0),
+                height: 36,
+                html: `
+              <div class="node-wrapper">
+                <div
+                  style="background-color: ${treeNodeStyle.rectBgColor};"
+                  class="rect-wrapper"
+                >
+                  <div
+                    tooltip=${cfg.nodeName}
+                    style="
+                      color: ${treeNodeStyle.textColor};
+                      max-width: ${MAX_TEXT_WIDTH}px
+                    "
+                    class="text ${
+                      textWidth > MAX_TEXT_WIDTH ? "showTooltip" : ""
+                    }"
+                  >
+                    ${cfg.nodeName}
+                  </div>
+                  ${
+                    showCount
+                      ? `
+                    <div
+                        style="background-color: ${treeNodeStyle.circleBgColor};"
+                        class="count"
+                      >
+                      ${cfg.childCount}
+                      </div>
+                    `
+                      : ""
+                  }
+                </div>
+                ${showCollapse ? `<div class="collapse-line"></div>` : ""}
+              </div>
+            `,
+              },
+              name: "dom-shape",
+            });
+            if (showCollapse) {
+              group.addShape("marker", {
+                attrs: {
+                  x: domShape.getBBox().width - 18,
+                  y: domShape.getBBox().height / 2,
+                  stroke: "#C6C6CC",
+                  fill: "#fff",
+                  lineWidth: 2,
+                  r: 8,
+                  symbol: COLLAPSE_ICON,
+                  cursor: "pointer",
+                },
+                name: "marker-shape",
+                className: "marker-collapse-icon",
+              });
+            }
+            return domShape;
+          },
+          getAnchorPoints() {
+            return [
+              [0, 0.5],
+              [1, 0.5],
+            ];
+          },
+        },
+        "single-node"
+      );
+    },
     initGraph() {
       this.graph = new G6.TreeGraph({
-        container: "abilityMapMountNode",
+        container: "svgMountNode",
         renderer: "svg",
         width: this.$el.offsetWidth,
         height: this.$el.offsetHeight,
         defaultNode: {
-          type: "tag-canvas-label-node",
+          type: "svg-node",
         },
         defaultEdge: {
           type: "cubic-horizontal",
@@ -253,13 +252,14 @@ export default {
     async handleFullScreen() {
       this.fullScreen = !this.fullScreen;
       await this.$nextTick();
-      const el = this.$refs.abilityMapMountNode;
+      const el = this.$refs.svgMountNode;
       this.graph.changeSize(el.offsetWidth, el.offsetHeight);
       this.graph.fitView();
       this.zoomRadio = this.graph.getZoom();
     },
   },
   async mounted() {
+    this.registerNode();
     await this.$nextTick();
     this.treeData = mockData;
     this.graph?.destroy();
@@ -270,9 +270,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.abilityMap-wrapper {
+.svg-wrapper {
   flex: 1;
   position: relative;
+  background: #f7f7fa;
+  overflow: hidden;
   &.fullScreen {
     position: fixed;
     top: 0;
@@ -281,17 +283,11 @@ export default {
     height: 100vh;
     z-index: 99;
   }
-  #abilityMapMountNode {
-    height: 100%;
-    width: 100%;
-    background: #f7f7fa;
-    overflow: hidden;
-  }
 }
 
-#abilityMapMountNode {
+#svgMountNode {
   ::v-deep text {
-    opacity: 0;
+    // opacity: 0;
   }
 
   ::v-deep foreignObject {

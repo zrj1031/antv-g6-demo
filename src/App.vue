@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <div class="router-wrapper">
-      <router-link to="/canvas">render canvas</router-link>
-      <router-link to="/svg">render svg</router-link>
+      <!-- FIXME 路由切换 G6会报错 暂时reload -->
+      <!-- <router-link to="/canvas">render canvas</router-link>
+      <router-link to="/svg">render svg</router-link> -->
+      <a @click.stop="reloadPage('#canvas')">render canvas</a>
+      <a @click.stop="reloadPage('#svg')">render svg</a>
     </div>
     <router-view></router-view>
   </div>
@@ -11,7 +14,12 @@
 <script>
 export default {
   name: "App",
-  components: {},
+  methods: {
+    reloadPage(url) {
+      window.location.href = url;
+      window.location.reload();
+    },
+  },
 };
 </script>
 
@@ -32,6 +40,8 @@ export default {
   .router-wrapper {
     margin-bottom: 16px;
     a {
+      cursor: pointer;
+      color: #1251ff;
       margin-right: 12px;
     }
   }
