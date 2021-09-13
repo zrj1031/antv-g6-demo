@@ -281,8 +281,8 @@ export default {
         },
         plugins: [
           new G6.Tooltip({
-            offsetX: 10,
-            offsetY: 20,
+            offsetX: -80,
+            offsetY: -125,
             className: "g6-tooltip-wrapper",
             shouldBegin: (event) => {
               return event.target.attrs?.showTooltip;
@@ -310,6 +310,17 @@ export default {
         icon.attr("symbol", collapsed ? EXPAND_ICON : COLLAPSE_ICON);
         // 展开项视图居中
         this.graph.focusItem(item, true);
+      });
+      this.graph.on("wheelzoom", (e) => {
+        e.stopPropagation();
+        const tooltips = Array.from(
+          document.getElementsByClassName("g6-tooltip-wrapper")
+        );
+        tooltips.forEach((tooltip) => {
+          if (tooltip && tooltip.style) {
+            tooltip.style.transform = `scale(${this.graph.getZoom()})`;
+          }
+        });
       });
     },
     draw() {

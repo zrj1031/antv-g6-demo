@@ -30,3 +30,10 @@ G6.Util.traverseTree(treeData, (subTree) => {
 });
 
 切换render渲染方式的时候G6会报错
+
+tooltip的位置计算不对 受到了layout的影响, 虽然可以通过offset偏移量来算，可是缩放时位置又不对了 记个TODO先
+```
+  getHeight: () => 36,
+  getVGap: () => 23,
+  getHGap: () => 134,
+```
