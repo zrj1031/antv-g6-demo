@@ -50,12 +50,17 @@ export default {
     };
   },
   computed: {
-    filterData() {
-      const treeData = this.treeData.childNodeList[0];
+    formatTreeData() {
+      const treeData = this.treeData;
       G6.Util.traverseTree(treeData, (subTree) => {
-        subTree.id = subTree.nodeID;
-        subTree.collapsed = !subTree.display;
-        subTree.children = subTree.childNodeList;
+        subTree.id = `${subTree.parentId ? `${subTree.parentId}-` : ""}${
+          subTree.id
+        }`;
+        subTree.children =
+          subTree.children?.map((item) => ({
+            ...item,
+            parentId: subTree.id,
+          })) ?? [];
       });
       return treeData;
     },
@@ -91,7 +96,6 @@ export default {
           textColor: "#fff",
         },
         1: {
-          rectBgColor: "#fff",
           textColor: "#1251FF",
           circleBgColor: "#6B93FF",
         },
@@ -109,7 +113,7 @@ export default {
 
       const MAX_TEXT_WIDTH = 152;
 
-      // 注册tag-label-node 节点
+      // 注册自定义节点
       G6.registerNode(
         "canvas-node",
         {
@@ -145,7 +149,7 @@ export default {
               },
               name: "rect-shape",
             });
-            const fittingText = fittingString(cfg.nodeName, MAX_TEXT_WIDTH, 14);
+            const fittingText = fittingString(cfg.name, MAX_TEXT_WIDTH, 14);
             const textShape = group.addShape("text", {
               attrs: {
                 ...BaseTextStyle,
@@ -155,7 +159,7 @@ export default {
               name: "text-shape",
             });
             const textWidth = textShape.getBBox().width;
-            const showCount = [1, 2, 3].includes(depth);
+            const showCount = depth !== 0 && children?.length > 0;
             const showCollapse = depth !== 0 && children?.length > 0;
 
             rectShape.attr({
@@ -197,7 +201,7 @@ export default {
                   ...BaseTextStyle,
                   x: rectWidth - 8 - 12,
                   y: rectHeight / 2,
-                  text: cfg.childCount,
+                  text: cfg.children.length,
                   fill: "#fff",
                 },
                 name: "count-text-shape",
@@ -282,7 +286,7 @@ export default {
         plugins: [
           new G6.Tooltip({
             offsetX: -80,
-            offsetY: -125,
+            offsetY: -100,
             className: "g6-tooltip-wrapper",
             shouldBegin: (event) => {
               return event.target.attrs?.showTooltip;
@@ -291,7 +295,7 @@ export default {
               const outDiv = document.createElement("div");
               outDiv.innerHTML = `
                 <div class="tooltip-inner-content">${
-                  e.item.getModel().nodeName
+                  e.item.getModel().name
                 }</div4>
               `;
               return outDiv;
@@ -324,7 +328,7 @@ export default {
       });
     },
     draw() {
-      this.graph.data(this.filterData);
+      this.graph.data(this.formatTreeData);
       this.graph.render();
       this.graph.fitView();
       this.zoomRadio = this.graph.getZoom();
@@ -357,9 +361,8 @@ export default {
 
 <style lang="less" scoped>
 .canvas-wrapper {
-  flex: 1;
+  height: 100%;
   position: relative;
-  background: #f7f7fa;
   overflow: hidden;
   &.fullScreen {
     position: fixed;

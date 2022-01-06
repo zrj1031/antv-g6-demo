@@ -1,5 +1,3 @@
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/antv-g6-demo/'
-    : '/'
-}
+  publicPath: process.env.NODE_ENV === "production" ? "/antv-g6-demo/" : "/",
+};
